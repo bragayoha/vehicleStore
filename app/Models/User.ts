@@ -24,6 +24,9 @@ export default class User extends BaseModel {
   @column({ serializeAs: null })
   public password: string
 
+  @column()
+  public type: 'admin' | 'employeer'
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 
@@ -32,6 +35,7 @@ export default class User extends BaseModel {
 
   @beforeSave()
   public static async hashPassword(user: User) {
+    console.log('entrei')
     if (user.$dirty.password) {
       user.password = await Hash.make(user.password)
     }
