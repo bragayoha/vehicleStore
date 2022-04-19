@@ -35,7 +35,6 @@ export default class User extends BaseModel {
 
   @beforeSave()
   public static async hashPassword(user: User) {
-    console.log('entrei')
     if (user.$dirty.password) {
       user.password = await Hash.make(user.password)
     }

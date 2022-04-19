@@ -9,4 +9,30 @@ export default class UsersController {
 
     return response.json(user)
   }
+
+  public async index({ request, response }: HttpContextContract) {
+    const users = await User.all()
+
+    return response.json(users)
+  }
+
+  public async update({ request, response }: HttpContextContract) {
+    const { id } = request.params()
+    const data = request.only(['name', 'avatar', 'biography'])
+
+    const user = await User.findOrFail(id)
+
+    user.merge(data)
+    await user.save()
+
+    return response.json(user)
+  }
+
+  public async show({ request, response }: HttpContextContract) {
+    const { id } = request.params()
+
+    const user = await User.findOrFail(id)
+
+    return response.json(user)
+  }
 }
