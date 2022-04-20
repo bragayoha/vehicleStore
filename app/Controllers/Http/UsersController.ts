@@ -3,9 +3,9 @@ import User from 'App/Models/User'
 
 export default class UsersController {
   public async store({ request, response }: HttpContextContract) {
-    const { cpf, name, email, avatar, biography, type, password } = request.all()
+    const { cpf, name, email, avatar, biography, roll, password } = request.all()
 
-    const user = await User.create({ cpf, name, email, avatar, biography, type, password })
+    const user = await User.create({ cpf, name, email, avatar, biography, roll, password })
 
     return response.json(user)
   }
@@ -34,5 +34,15 @@ export default class UsersController {
     const user = await User.findOrFail(id)
 
     return response.json(user)
+  }
+
+  public async destroy({ request, response }: HttpContextContract) {
+    const { id } = request.params()
+
+    const user = await User.findOrFail(id)
+
+    await user.delete()
+
+    return response.status(200)
   }
 }

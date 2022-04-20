@@ -25,7 +25,7 @@ export default class User extends BaseModel {
   public password: string
 
   @column()
-  public type: 'admin' | 'employeer'
+  public roll: 'admin' | 'employeer'
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
