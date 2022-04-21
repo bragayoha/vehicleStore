@@ -11,7 +11,9 @@ export default class UsersController {
   }
 
   public async index({ request, response }: HttpContextContract) {
-    const users = await User.all()
+    const { page, perPage } = request.all()
+
+    const users = await User.query().paginate(page, perPage)
 
     return response.json(users)
   }
