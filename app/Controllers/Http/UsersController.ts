@@ -1,6 +1,7 @@
 import Application from '@ioc:Adonis/Core/Application'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
+import CreateUserValidator from 'App/Validators/User/CreateUserValidator'
 import ResetPasswordValidator from 'App/Validators/User/ResetPasswordValidator'
 
 export default class UsersController {
@@ -13,7 +14,8 @@ export default class UsersController {
   }
 
   public async store({ request, response }: HttpContextContract) {
-    const { cpf, name, email, biography, roll } = request.all()
+    const data = await request.validate(CreateUserValidator)
+    const { cpf, name, email, biography, role } = request.all()
 
     const avatar = request.file('avatar', {
       size: '2mb',
@@ -31,7 +33,7 @@ export default class UsersController {
       email,
       biography,
       avatar: fileName,
-      roll,
+      role,
       password: 'default',
     })
 

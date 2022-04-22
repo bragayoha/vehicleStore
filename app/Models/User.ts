@@ -33,7 +33,7 @@ export default class User extends BaseModel {
   public password: string
 
   @column()
-  public roll: 'admin' | 'employeer'
+  public role: 'admin' | 'employeer'
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

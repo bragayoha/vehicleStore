@@ -15,7 +15,7 @@ export default class UserSeeder extends BaseSeeder {
         avatar: '',
         biography: '',
         password: 'seila',
-        roll: 'admin',
+        role: 'admin',
       },
       {
         cpf: '00000000002',
@@ -24,7 +24,7 @@ export default class UserSeeder extends BaseSeeder {
         avatar: '',
         biography: '',
         password: '1234',
-        roll: 'admin',
+        role: 'admin',
       },
       {
         cpf: '00000000003',
@@ -33,7 +33,7 @@ export default class UserSeeder extends BaseSeeder {
         avatar: '',
         biography: '',
         password: '4321',
-        roll: 'employeer',
+        role: 'employeer',
       },
       {
         cpf: '00000000004',
@@ -42,7 +42,7 @@ export default class UserSeeder extends BaseSeeder {
         avatar: '',
         biography: '',
         password: '777',
-        roll: 'employeer',
+        role: 'employeer',
       },
       {
         cpf: '00000000005',
@@ -51,7 +51,7 @@ export default class UserSeeder extends BaseSeeder {
         avatar: '',
         biography: '',
         password: 'daniel123',
-        roll: 'employeer',
+        role: 'employeer',
       },
       {
         cpf: '00000000006',
@@ -60,7 +60,7 @@ export default class UserSeeder extends BaseSeeder {
         avatar: '',
         biography: '',
         password: 'bandeirantes',
-        roll: 'employeer',
+        role: 'employeer',
       },
       {
         cpf: '00000000007',
@@ -69,7 +69,7 @@ export default class UserSeeder extends BaseSeeder {
         avatar: '',
         biography: '',
         password: 'palmeiras',
-        roll: 'employeer',
+        role: 'employeer',
       },
     ])
   }
