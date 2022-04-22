@@ -1,3 +1,4 @@
+import Application from '@ioc:Adonis/Core/Application'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
 import ResetPasswordValidator from 'App/Validators/User/ResetPasswordValidator'
@@ -12,9 +13,27 @@ export default class UsersController {
   }
 
   public async store({ request, response }: HttpContextContract) {
-    const { cpf, name, email, avatar, biography, roll } = request.all()
+    const { cpf, name, email, biography, roll } = request.all()
 
-    const user = await User.create({ cpf, name, email, avatar, biography, roll, password: '1234' })
+    const avatar = request.file('avatar', {
+      size: '2mb',
+      extnames: ['jpg', 'png'],
+    })
+    const fileName = `${Date.now()}.${avatar?.extname}`
+
+    if (avatar) {
+      await avatar.move(Application.tmpPath('uploads'))
+    }
+
+    const user = await User.create({
+      cpf,
+      name,
+      email,
+      biography,
+      avatar: fileName,
+      roll,
+      password: 'default',
+    })
 
     return response.json(user)
   }
