@@ -11,7 +11,13 @@ export default class VehiclesController {
   }
 
   public async index({ request, response }: HttpContextContract) {
-    const { page, perPage } = request.all()
+    const { page, perPage, status } = request.all()
+
+    if (status) {
+      const vehicles = await Vehicle.query().where('status', status).paginate(page, perPage)
+
+      return response.json(vehicles)
+    }
 
     const vehicles = await Vehicle.query().paginate(page, perPage)
 
@@ -36,23 +42,29 @@ export default class VehiclesController {
     return response.status(200)
   }
 
-  public async showByStatus({ request, response }: HttpContextContract) {
-    const { page, perPage } = request.all()
-    const { status } = request.params()
+  public async sell({ request, response, auth }: HttpContextContract) {
+    const { id } = request.params()
+    const sellerId = auth.user?.id
+    const status = 'sold'
+    const data = request.only(['soldAt', 'soldPrice'])
 
-    const vehicle = await Vehicle.query(status).paginate(page, perPage)
+    const vehicle = await Vehicle.findOrFail(id)
+
+    vehicle.merge({ ...data, sellerId, status })
+    await vehicle.save()
 
     return response.json(vehicle)
   }
 
-  public async sell({ request, response, auth }: HttpContextContract) {
+  public async reserve({ request, response, auth }: HttpContextContract) {
     const { id } = request.params()
-    const user_id = auth.user?.id
-    const data = request.only(['soldAt', 'status', 'soldPrice'])
+    const sellerId = auth.user?.id
+    const status = 'reserved'
+    const data = request.only(['soldAt', 'soldPrice'])
 
     const vehicle = await Vehicle.findOrFail(id)
 
-    vehicle.merge(data, { sellerId: user_id })
+    vehicle.merge({ ...data, sellerId, status })
     await vehicle.save()
 
     return response.json(vehicle)

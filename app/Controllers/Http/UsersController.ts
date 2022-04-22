@@ -1,21 +1,22 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
+import ResetPasswordValidator from 'App/Validators/User/ResetPasswordValidator'
 
 export default class UsersController {
-  public async store({ request, response }: HttpContextContract) {
-    const { cpf, name, email, avatar, biography, roll, password } = request.all()
-
-    const user = await User.create({ cpf, name, email, avatar, biography, roll, password })
-
-    return response.json(user)
-  }
-
   public async index({ request, response }: HttpContextContract) {
     const { page, perPage } = request.all()
 
     const users = await User.query().paginate(page, perPage)
 
     return response.json(users)
+  }
+
+  public async store({ request, response }: HttpContextContract) {
+    const { cpf, name, email, avatar, biography, roll } = request.all()
+
+    const user = await User.create({ cpf, name, email, avatar, biography, roll, password: '1234' })
+
+    return response.json(user)
   }
 
   public async update({ request, response }: HttpContextContract) {
@@ -34,6 +35,7 @@ export default class UsersController {
     const { id } = request.params()
 
     const user = await User.findOrFail(id)
+    await user.load('vehicles')
 
     return response.json(user)
   }
@@ -46,5 +48,17 @@ export default class UsersController {
     await user.delete()
 
     return response.status(200)
+  }
+
+  public async resetPassword({ request, response, auth }: HttpContextContract) {
+    const id = auth.user?.id
+    const password = await request.validate(ResetPasswordValidator)
+
+    const user = await User.findOrFail(id)
+
+    user.merge(password)
+    await user.save()
+
+    return response.status(202)
   }
 }

@@ -6,4 +6,5 @@ Route.group(() => {
   Route.get('/users/:id', 'UsersController.show')
   Route.patch('/users/:id', 'UsersController.update')
   Route.delete('/users/:id', 'UsersController.destroy')
+  Route.patch('/reset-password', 'UsersController.resetPassword')
 }).middleware('auth')

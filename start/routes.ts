@@ -1,5 +1,6 @@
 import Route from '@ioc:Adonis/Core/Route'
 import 'App/Modules/User/routes'
+import 'App/Modules/Vehicle/routes'
 
 Route.where('id', {
   match: /^[0-9]+$/,

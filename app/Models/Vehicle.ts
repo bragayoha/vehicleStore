@@ -33,8 +33,11 @@ export default class Vehicle extends BaseModel {
   @column.dateTime()
   public soldAt: DateTime
 
+  @column()
+  public sellerId: number
+
   @hasOne(() => User, { foreignKey: 'seller_id' })
-  public sellerId: HasOne<typeof User>
+  public seller: HasOne<typeof User>
 
   @column()
   public status: 'sold' | 'reserved' | 'available'
