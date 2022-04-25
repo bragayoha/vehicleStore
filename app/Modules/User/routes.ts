@@ -8,4 +8,5 @@ Route.group(() => {
   Route.delete('/users/:id', 'UsersController.destroy')
   Route.put('/reset-password', 'UsersController.resetPassword')
   Route.put('/update-profile', 'UsersController.updateProfile')
+  Route.get('download/:fileName', 'UserController.downloadAvatar')
 }).middleware('auth')

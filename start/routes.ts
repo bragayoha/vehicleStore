@@ -12,4 +12,4 @@ Route.get('/', () => {
 })
 
 Route.post('/login', 'AuthController.login')
-Route.post('/logout', 'AuthController.logout')
+Route.post('/logout', 'AuthController.logout').middleware('auth')

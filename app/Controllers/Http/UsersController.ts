@@ -126,4 +126,12 @@ export default class UsersController {
 
     return response.status(202)
   }
+
+  public async downloadAvatar({ request, response }: HttpContextContract) {
+    const { fileName } = request.params()
+
+    const filePath = Application.tmpPath(`uploads/${fileName}`)
+
+    return response.download(filePath)
+  }
 }
