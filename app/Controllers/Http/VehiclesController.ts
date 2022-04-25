@@ -1,11 +1,19 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Vehicle from 'App/Models/Vehicle'
+import CreateVehicleValidator from 'App/Validators/Vehicle/CreateVehicleValidator'
+import SellOrReserveVehicleValidator from 'App/Validators/Vehicle/SellOrReserveVehicleValidator'
 
 export default class VehiclesController {
-  public async store({ request, response }: HttpContextContract) {
-    const { brand, model, year, km, color, vin, purchasePrice } = request.all()
+  public async store({ request, response, auth }: HttpContextContract) {
+    const adminRole = auth.user?.role
 
-    const vehicle = await Vehicle.create({ brand, model, year, km, color, vin, purchasePrice })
+    if (adminRole !== 'admin') {
+      return response.status(401)
+    }
+
+    const data = await request.validate(CreateVehicleValidator)
+
+    const vehicle = await Vehicle.create(data)
 
     return response.json(vehicle)
   }
@@ -32,7 +40,13 @@ export default class VehiclesController {
     return response.json(vehicle)
   }
 
-  public async destroy({ request, response }: HttpContextContract) {
+  public async destroy({ request, response, auth }: HttpContextContract) {
+    const adminRole = auth.user?.role
+
+    if (adminRole !== 'admin') {
+      return response.status(401)
+    }
+
     const { id } = request.params()
 
     const vehicle = await Vehicle.findOrFail(id)
@@ -46,7 +60,8 @@ export default class VehiclesController {
     const { id } = request.params()
     const sellerId = auth.user?.id
     const status = 'sold'
-    const data = request.only(['soldAt', 'soldPrice'])
+
+    const data = await request.validate(SellOrReserveVehicleValidator)
 
     const vehicle = await Vehicle.findOrFail(id)
 
@@ -60,7 +75,8 @@ export default class VehiclesController {
     const { id } = request.params()
     const sellerId = auth.user?.id
     const status = 'reserved'
-    const data = request.only(['soldAt', 'soldPrice'])
+
+    const data = await request.validate(SellOrReserveVehicleValidator)
 
     const vehicle = await Vehicle.findOrFail(id)
 
