@@ -5,9 +5,12 @@ export default class SellOrReserveVehicleValidator {
   constructor(protected ctx: HttpContextContract) {}
 
   public schema = schema.create({
-    soldAt: schema.date({
-      format: 'dd-MM-yyyy',
-    }),
+    soldAt: schema.date(
+      {
+        format: 'dd-MM-yyyy',
+      },
+      [rules.required()]
+    ),
     soldPrice: schema.number([rules.required()]),
   })
 

@@ -30,7 +30,7 @@ export default class Vehicle extends BaseModel {
   @column()
   public soldPrice: number
 
-  @column.dateTime()
+  @column.dateTime({ serialize: (value) => value.toFormat('dd/MM/yyyy') })
   public soldAt: DateTime
 
   @column()
@@ -42,9 +42,13 @@ export default class Vehicle extends BaseModel {
   @column()
   public status: 'sold' | 'reserved' | 'available'
 
-  @column.dateTime({ autoCreate: true })
+  @column.dateTime({ autoCreate: true, serialize: (value) => value.toFormat('dd/MM/yyyy') })
   public createdAt: DateTime
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  @column.dateTime({
+    autoCreate: true,
+    autoUpdate: true,
+    serialize: (value) => value.toFormat('dd/MM/yyyy'),
+  })
   public updatedAt: DateTime
 }

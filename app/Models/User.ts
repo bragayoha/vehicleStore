@@ -35,10 +35,14 @@ export default class User extends BaseModel {
   @column()
   public role: string
 
-  @column.dateTime({ autoCreate: true })
+  @column.dateTime({ autoCreate: true, serialize: (value) => value.toFormat('dd/MM/yyyy') })
   public createdAt: DateTime
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  @column.dateTime({
+    autoCreate: true,
+    autoUpdate: true,
+    serialize: (value) => value.toFormat('dd/MM/yyyy'),
+  })
   public updatedAt: DateTime
 
   @hasMany(() => Vehicle, {
