@@ -3,9 +3,16 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
 import CreateUserValidator from 'App/Validators/User/CreateUserValidator'
 import ResetPasswordValidator from 'App/Validators/User/ResetPasswordValidator'
+import UpdateUserValidator from 'App/Validators/User/UpdateUserValidator'
 
 export default class UsersController {
-  public async index({ request, response }: HttpContextContract) {
+  public async index({ request, response, auth }: HttpContextContract) {
+    const adminRole = auth.user?.role
+
+    if (adminRole !== 'admin') {
+      return response.status(401)
+    }
+
     const { page, perPage } = request.all()
 
     const users = await User.query().paginate(page, perPage)
@@ -13,40 +20,71 @@ export default class UsersController {
     return response.json(users)
   }
 
-  public async store({ request, response }: HttpContextContract) {
-    const data = await request.validate(CreateUserValidator)
-    const { cpf, name, email, biography, role } = request.all()
+  public async store({ request, response, auth }: HttpContextContract) {
+    const adminRole = auth.user?.role
 
-    const avatar = request.file('avatar', {
-      size: '2mb',
-      extnames: ['jpg', 'png'],
-    })
-    const fileName = `${Date.now()}.${avatar?.extname}`
-
-    if (avatar) {
-      await avatar.move(Application.tmpPath('uploads'))
+    if (adminRole !== 'admin') {
+      return response.status(401)
     }
 
-    const user = await User.create({
-      cpf,
-      name,
-      email,
-      biography,
-      avatar: fileName,
-      role,
-      password: 'default',
-    })
+    const data = await request.validate(CreateUserValidator)
+
+    const fileName = `${Date.now()}.${data.avatar?.extname}`
+
+    if (data.avatar) {
+      await data.avatar.move(Application.tmpPath('uploads'))
+    }
+
+    const user = await User.create({ ...data, avatar: fileName })
 
     return response.json(user)
   }
 
-  public async update({ request, response }: HttpContextContract) {
+  public async update({ request, response, auth }: HttpContextContract) {
+    const adminRole = auth.user?.role
+
+    if (adminRole !== 'admin') {
+      return response.status(401)
+    }
+
     const { id } = request.params()
-    const data = request.only(['name', 'avatar', 'biography'])
 
     const user = await User.findOrFail(id)
+    const data = await request.validate(UpdateUserValidator)
 
-    user.merge(data)
+    const fileName = `${Date.now()}.${data.avatar?.extname}`
+
+    if (data.avatar) {
+      await data.avatar.move(Application.tmpPath('uploads'))
+    }
+
+    user.merge({
+      name: data.name,
+      biography: data.biography,
+      avatar: fileName,
+    })
+    await user.save()
+
+    return response.json(user)
+  }
+
+  public async updateProfile({ request, response, auth }: HttpContextContract) {
+    const id = auth.user?.id
+
+    const user = await User.findOrFail(id)
+    const data = await request.validate(UpdateUserValidator)
+
+    const fileName = `${Date.now()}.${data.avatar?.extname}`
+
+    if (data.avatar) {
+      await data.avatar.move(Application.tmpPath('uploads'))
+    }
+
+    user.merge({
+      name: data.name,
+      biography: data.biography,
+      avatar: fileName,
+    })
     await user.save()
 
     return response.json(user)
@@ -61,7 +99,13 @@ export default class UsersController {
     return response.json(user)
   }
 
-  public async destroy({ request, response }: HttpContextContract) {
+  public async destroy({ request, response, auth }: HttpContextContract) {
+    const adminRole = auth.user?.role
+
+    if (adminRole !== 'admin') {
+      return response.status(401)
+    }
+
     const { id } = request.params()
 
     const user = await User.findOrFail(id)
