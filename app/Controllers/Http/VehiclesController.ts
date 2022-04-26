@@ -4,20 +4,6 @@ import CreateVehicleValidator from 'App/Validators/Vehicle/CreateVehicleValidato
 import SellOrReserveVehicleValidator from 'App/Validators/Vehicle/SellOrReserveVehicleValidator'
 
 export default class VehiclesController {
-  public async store({ request, response, auth }: HttpContextContract) {
-    const adminRole = auth.user?.role
-
-    if (adminRole !== 'admin') {
-      return response.status(401)
-    }
-
-    const data = await request.validate(CreateVehicleValidator)
-
-    const vehicle = await Vehicle.create(data)
-
-    return response.json(vehicle)
-  }
-
   public async index({ request, response }: HttpContextContract) {
     const { page, perPage, status } = request.all()
 
@@ -30,6 +16,20 @@ export default class VehiclesController {
     const vehicles = await Vehicle.query().paginate(page, perPage)
 
     return response.json(vehicles)
+  }
+
+  public async store({ request, response, auth }: HttpContextContract) {
+    const adminRole = auth.user?.role
+
+    if (adminRole !== 'admin') {
+      return response.status(401)
+    }
+
+    const data = await request.validate(CreateVehicleValidator)
+
+    const vehicle = await Vehicle.create(data)
+
+    return response.json(vehicle)
   }
 
   public async show({ request, response }: HttpContextContract) {

@@ -68,28 +68,6 @@ export default class UsersController {
     return response.json(user)
   }
 
-  public async updateProfile({ request, response, auth }: HttpContextContract) {
-    const id = auth.user?.id
-
-    const user = await User.findOrFail(id)
-    const data = await request.validate(UpdateUserValidator)
-
-    const fileName = `${Date.now()}.${data.avatar?.extname}`
-
-    if (data.avatar) {
-      await data.avatar.move(Application.tmpPath('uploads'))
-    }
-
-    user.merge({
-      name: data.name,
-      biography: data.biography,
-      avatar: fileName,
-    })
-    await user.save()
-
-    return response.json(user)
-  }
-
   public async show({ request, response }: HttpContextContract) {
     const { id } = request.params()
 
@@ -113,6 +91,28 @@ export default class UsersController {
     await user.delete()
 
     return response.status(200)
+  }
+
+  public async updateProfile({ request, response, auth }: HttpContextContract) {
+    const id = auth.user?.id
+
+    const user = await User.findOrFail(id)
+    const data = await request.validate(UpdateUserValidator)
+
+    const fileName = `${Date.now()}.${data.avatar?.extname}`
+
+    if (data.avatar) {
+      await data.avatar.move(Application.tmpPath('uploads'))
+    }
+
+    user.merge({
+      name: data.name,
+      biography: data.biography,
+      avatar: fileName,
+    })
+    await user.save()
+
+    return response.json(user)
   }
 
   public async resetPassword({ request, response, auth }: HttpContextContract) {
